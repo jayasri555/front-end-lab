@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Notes App</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background: #f4f4f4;
+    }
+    h2 { text-align: center; }
+    .container {
+        max-width: 500px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: 1px solid #aaa;
+    }
+    button {
+        padding: 10px 15px;
+        margin-top: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+    .note {
+        background: #eee;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 15px;
+    }
+    .actions button {
+        background: #28a745;
+        margin-right: 10px;
+    }
+    .actions button.delete {
+        background: #dc3545;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Student Notes App</h2>
+
+    <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+    <button onclick="addNote()">Add Note</button>
+
+    <h3>Saved Notes</h3>
+    <div id="notesList"></div>
+</div>
+
+<script>
+    // Load notes on page start
+    document.addEventListener("DOMContentLoaded", loadNotes);
+
+    // Add Note
+    function addNote() {
+        let note = document.getElementById("noteInput").value;
+        if (note.trim() === "") return alert("Please enter a note");
+
+        let notes = JSON.parse(localStorage.getItem("notes")) || [];
+        notes.push(note);
+        localStorage.setItem("notes", JSON.stringify(notes));
+
+        document.getElementById("noteInput").value = "";
+        loadNotes();
+    }
+
+    // Load all notes
+    function loadNotes() {
+        let notes = JSON.parse(localStorage.getItem("notes")) || [];
+        let notesList = document.getElementById("notesList");
+        notesList.innerHTML = "";
+
+        notes.forEach((note, index) => {
+            notesList.innerHTML += `
+                <div class="note">
+                    <p>${note}</p>
+                    <div class="actions">
+                        <button onclick="editNote(${index})">Edit</button>
+                        <button class="delete" onclick="deleteNote(${index})">Delete</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Edit Note
+    function editNote(index) {
+        let notes = JSON.parse(localStorage.getItem("notes"));
+        let newNote = prompt("Edit your note:", notes[index]);
+
+        if (newNote !== null) {
+            notes[index] = newNote;
+            localStorage.setItem("notes", JSON.stringify(notes));
+            loadNotes();
+        }
+    }
+
+    // Delete Note
+    function deleteNote(index) {
+        let notes = JSON.parse(localStorage.getItem("notes"));
+        notes.splice(index, 1);
+        localStorage.setItem("notes", JSON.stringify(notes));
+        loadNotes();
+    }
+</script>
+
+</body>
+</html>
